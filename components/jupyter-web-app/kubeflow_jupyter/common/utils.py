@@ -5,6 +5,10 @@ import datetime as dt
 
 CONFIG = "/etc/config/spawner_ui_config.yaml"
 
+class SafeDict(dict):
+  def __missing__(self, key):
+    return '{' + key + '}'
+
 
 def create_logger(name):
   handler = logging.StreamHandler(sys.stdout)
@@ -30,7 +34,7 @@ def spawner_ui_config(username):
   c = None
   try:
     with open(CONFIG, "r") as f:
-      c = f.read().format(username=username)
+      c = f.read().format_map(SafeDict(username=username))
   except IOError:
     print("Error opening Spawner UI config file")
 
